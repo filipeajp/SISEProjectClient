@@ -55,10 +55,8 @@ public class Main {
 			identifier = clientIdOptions[i];
 		}
 
-		String userId = (String) userType + identifier;
-
 		// if user is an insurer
-		if (userId.contains("Client")) {
+		if (userType.equals("Client")) {
 
 			while (true) {
 				String choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
@@ -155,8 +153,6 @@ public class Main {
 					else if (choice.equals("8")) {
 						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-						Claim claim = claimDataStore.getClaim(Integer.parseInt(claimId));
-
 						JOptionPane.showMessageDialog(null, claimDataStore.listDocuments(Integer.parseInt(identifier), Integer.parseInt(claimId)).toString());
 
 					}
@@ -196,7 +192,7 @@ public class Main {
 		} // if user is a client
 
 		// if user is a Officer
-		else if (userId.contains("Officer")) {
+		else if (userType.equals("Officer")) {
 
 			while (true) {
 
@@ -259,7 +255,7 @@ public class Main {
 
 						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
 
-						int docOwnerId = claimDataStore.getDocumentOwner(clientId, Integer.parseInt(docId));
+						int docOwnerId = claimDataStore.getDocumentOwner(Integer.parseInt(claimId), Integer.parseInt(docId));
 
 						String encryptedHash = document.getSignature();
 						Signature sign = new Signature();
@@ -301,8 +297,6 @@ public class Main {
 
 						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
 
-						Claim claim = claimDataStore.getClaim(Integer.parseInt(claimId));
-
 						JOptionPane.showMessageDialog(null, claimDataStore.listDocuments(clientId, Integer.parseInt(claimId)).toString());
 					}
 
@@ -314,11 +308,13 @@ public class Main {
 
 						claimDataStore.simulateTampering(Integer.parseInt(claimId), Integer.parseInt(docId), docContent);
 
+						int docOwnerId = claimDataStore.getDocumentOwner(Integer.parseInt(claimId), Integer.parseInt(docId));
+
 						Signature sign = new Signature();
 						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
 						String encryptedHash = document.getSignature();
 
-						sign.validateSignature("publicKeys\\" + "user" + userId + "PublicKey", encryptedHash, docContent);
+						sign.validateSignature("publicKeys\\" + "user" + docOwnerId + "PublicKey", encryptedHash, docContent);
 					}
 
 					// exit to close application
