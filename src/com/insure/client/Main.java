@@ -31,291 +31,311 @@ public class Main {
 	 * ClaimDataStore will run until the user input 'exit'
 	 * */
 	public static void runClaimDataBase (ClaimDataStore claimDataStore, String userType, String identifier) throws java.lang.Exception {
+		String[] userOptions = {"Client", "Officer"};
+		String[] clientIdOptions = {"1", "2", "3", "4", "5", "6"};
+		String[] officerIdOptions = {"7", "8", "9", "10"};
 
-		userType = JOptionPane.showInputDialog("Which user are you?\n[c] Client\n[o] Officer");
-		identifier = JOptionPane.showInputDialog("Insert your userID (user1; user2; user3; user4; user5; user6)");
+		ImageIcon logo = new ImageIcon("insure.png");
+
+		int i = JOptionPane.showOptionDialog(null, "Which user are you?", "User type",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+				logo, userOptions, userOptions[0]);
+
+		userType = userOptions[i];
+
+		if (userType.equals("Client")) {
+			i = JOptionPane.showOptionDialog(null, "Insert your clientID.", "Client ID",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+					logo, clientIdOptions, clientIdOptions[0]);
+			identifier = clientIdOptions[i];
+		} else {
+			i = JOptionPane.showOptionDialog(null, "Insert your officerID.", "Officer ID",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+					logo, officerIdOptions, officerIdOptions[0]);
+			identifier = clientIdOptions[i];
+		}
 
 		String userId = (String) userType + identifier;
 
-
-		// implement in this method
-
-		if (userId.contains("c")) {
-
-			String choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-					"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
+		// if user is an insurer
+		if (userId.contains("Client")) {
 
 			while (true) {
-				// 1- create claim
-				if (choice.equals("1")) {
-					String claimDescription = JOptionPane.showInputDialog("Write down your claim");
-					int claimId = claimDataStore.createClaim(claimDescription, Integer.parseInt(identifier));
-					String claimToString = claimDataStore.retrieveClaim(claimId);
-					JOptionPane.showMessageDialog(null, "Claim created.\n" + claimToString + "\nPress 'OK' to continue");
+				String choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
+						"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n [8] - List Documents\n [9] - Simulate document tampering\n exit to finish");
+				try {
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-							"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
-				}
-
-				// 2- read claim
-				else if (choice.equals("2")) {
-
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					try {
-						String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId));
-						JOptionPane.showMessageDialog(null, claimToString + "\nPress 'OK' to continue.");
-						choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-								"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
-					} catch (ClaimNotFoundException_Exception e) {
-						JOptionPane.showMessageDialog(null, "Claim " + claimId + " does not exist.\n");
-						choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-								"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
+					// 1- create claim
+					if (choice.equals("1")) {
+						String claimDescription = JOptionPane.showInputDialog("Write down your claim");
+						int claimId = claimDataStore.createClaim(claimDescription, Integer.parseInt(identifier));
+						String claimToString = claimDataStore.retrieveClaim(claimId, Integer.parseInt(identifier));
+						JOptionPane.showMessageDialog(null, "Claim created.\n" + claimToString + "\nPress 'OK' to continue");
 					}
-				}
 
-				// 3- update claim
-				else if (choice.equals("3")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
+					// 2- read claim
+					else if (choice.equals("2")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-					try {
-						int uId = claimDataStore.getClaimUser((Integer.parseInt(claimId)));
-						while (uId != Integer.parseInt(identifier))
-							claimId = JOptionPane.showInputDialog("This claim belongs to another user.\n Please insert claim ID again:");
+						String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId), Integer.parseInt(identifier));
+						JOptionPane.showMessageDialog(null, claimToString + "\nPress 'OK' to continue.");
+					}
+
+					// 3- update claim
+					else if (choice.equals("3")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+
 						String claimDescription = JOptionPane.showInputDialog("Insert the new claim description:");
-						claimDataStore.updateClaim(Integer.parseInt(claimId), claimDescription);
-						String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId));
+
+						claimDataStore.updateClaim(Integer.parseInt(identifier), Integer.parseInt(claimId), claimDescription);
+						String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId), Integer.parseInt(identifier));
 
 						JOptionPane.showMessageDialog(null, "Claim updated.\n" + claimToString + "\nPress 'OK' to continue");
-
-						choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-								"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
-					} catch (ClaimNotFoundException_Exception e) {
-						JOptionPane.showMessageDialog(null, "Claim " + claimId + " does not exist.\n");
-						choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-								"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
-					}
-				}
-
-				// 4 - submit document
-				else if (choice.equals("4")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					int uId = claimDataStore.getClaimUser((Integer.parseInt(claimId)));
-
-					while (uId != Integer.parseInt(identifier))
-						claimId = JOptionPane.showInputDialog("This claim belongs to another user.\n Please insert claim ID again:");
-
-					String docName = JOptionPane.showInputDialog("Insert document name:");
-					String docContent = JOptionPane.showInputDialog("Insert document content :");
-
-					Signature sign = new Signature();
-					String encryptedHash = sign.createSignature("privateKeys\\" + "user" + identifier + "\\" + "user" + identifier + "PrivateKey", docContent);
-
-					// only stores after signature validation
-					boolean validation = claimDataStore.createDocument(Integer.parseInt(claimId), docName, docContent, identifier, encryptedHash);
-
-					if (validation) {
-						JOptionPane.showMessageDialog(null, "Successfull upload!\nPress 'OK' to continue.");
-					} else {
-						JOptionPane.showMessageDialog(null, "Error! Document was not successfully uploaded.\nPress 'OK' to continue.");
 					}
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-							"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
+					// 4 - submit document
+					else if (choice.equals("4")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-				}
+						String docName = JOptionPane.showInputDialog("Insert document name:");
+						String docContent = JOptionPane.showInputDialog("Insert document content :");
 
-				// 5 - read document
-				else if (choice.equals("5")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					int uId = claimDataStore.getClaimUser((Integer.parseInt(claimId)));
+						Signature sign = new Signature();
+						String encryptedHash = sign.createSignature("privateKeys\\" + "user" + identifier + "\\" + "user" + identifier + "PrivateKey", docContent);
 
-					while (uId != Integer.parseInt(identifier))
-						claimId = JOptionPane.showInputDialog("This claim belongs to another user.\n Please insert claim ID again:");
+						// only stores after signature validation
+						claimDataStore.createDocument(Integer.parseInt(claimId), docName, docContent, Integer.parseInt(identifier), Integer.parseInt(identifier), encryptedHash);
 
-					String docId = JOptionPane.showInputDialog("Insert document ID:");
+					}
 
-					String docToString = claimDataStore.readDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
+					// 5 - read document
+					else if (choice.equals("5")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-					Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
 
-					String encryptedHash = document.getSignature();
-					Signature sign = new Signature();
-					boolean validation = sign.validateSignature("publicKeys\\" + "user" + identifier + "PublicKey", encryptedHash, document.getContent());
+						String docToString = claimDataStore.readDocument(Integer.parseInt(identifier), Integer.parseInt(claimId), Integer.parseInt(docId));
 
-					if (validation)
-						JOptionPane.showMessageDialog(null, docToString + "\nThis document was not tampered!\n" + "\nPress 'OK' to continue.");
-					else
-						JOptionPane.showMessageDialog(null, docToString + "\nThis document was tampered!\n" + "\nPress 'OK' to continue.");
+						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-							"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
+						int docOwnerId = claimDataStore.getDocumentOwner(Integer.parseInt(claimId), Integer.parseInt(docId));
 
-				}
-
-				// 6 - update document
-				else if (choice.equals("6")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					int uId = claimDataStore.getClaimUser((Integer.parseInt(claimId)));
-
-					while (uId != Integer.parseInt(identifier))
-						claimId = JOptionPane.showInputDialog("This claim belongs to another user.\n Please insert claim ID again:");
-
-					String docId = JOptionPane.showInputDialog("Insert document ID:");
-					String docContent = JOptionPane.showInputDialog("Insert new document content:");
-
-					claimDataStore.updateDocument(identifier, Integer.parseInt(claimId), Integer.parseInt(docId), docContent);
-					String docToString = claimDataStore.readDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
-
-					JOptionPane.showMessageDialog(null, "Document updated.\n" + docToString + "\nPress 'OK' to continue");
-
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-							"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
-
-				}
-
-				// 7 - delete document
-				else if (choice.equals("7")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-
-					int uId = claimDataStore.getClaimUser((Integer.parseInt(identifier)));
-
-					while (uId != Integer.parseInt(userId))
-						claimId = JOptionPane.showInputDialog("This claim belongs to another user.\n Please insert claim ID again:");
-
-					String docId = JOptionPane.showInputDialog("Insert document ID:");
-
-					claimDataStore.deleteDocument(identifier, Integer.parseInt(claimId), Integer.parseInt(docId));
-
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-							"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
-				}
-
-				// 8 - List documents
-				else if (choice.equals("8")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					int uId = claimDataStore.getClaimUser((Integer.parseInt(claimId)));
-
-					while (uId != Integer.parseInt(identifier))
-						claimId = JOptionPane.showInputDialog("This claim belongs to another user.\n Please insert claim ID again:");
-
-					Claim claim = claimDataStore.getClaim(Integer.parseInt(claimId));
-					/*for (int i = 1; i < claimDataStore.getNumberOfDocs(Integer.parseInt(claimId)); i++) {
-						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), i);
 						String encryptedHash = document.getSignature();
 						Signature sign = new Signature();
-						boolean validation = sign.validateSignature("publicKeys\\" + "user" + identifier + "PublicKey", encryptedHash, document.getContent());
-					}*/
-					JOptionPane.showMessageDialog(null, claimDataStore.listDocuments(Integer.parseInt(claimId)).toString());
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Create a Claim\n [2] - Read Claim\n " +
-							"[3] - Update claim\n [4] - Submit Document\n [5] - Read Document\n [6] - Update Document\n [7] - Delete Document\n  [8] - List Documents\n exit to finish");
-				} else {
-					break;
+						sign.validateSignature("publicKeys\\" + "user" + docOwnerId + "PublicKey", encryptedHash, document.getContent());
+
+						JOptionPane.showMessageDialog(null, docToString);
+					}
+
+					// 6 - update document
+					else if (choice.equals("6")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
+
+						String docContent = JOptionPane.showInputDialog("Insert new document content:");
+
+						claimDataStore.updateDocument(Integer.parseInt(identifier), Integer.parseInt(claimId), Integer.parseInt(docId), docContent);
+						String docToString = claimDataStore.readDocument(Integer.parseInt(identifier), Integer.parseInt(claimId), Integer.parseInt(docId));
+
+						JOptionPane.showMessageDialog(null, "Document updated.\n" + docToString + "\nPress 'OK' to continue");
+					}
+
+					// 7 - delete document
+					else if (choice.equals("7")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
+
+						claimDataStore.deleteDocument(Integer.parseInt(identifier), Integer.parseInt(claimId), Integer.parseInt(docId));
+					}
+
+					// 8 - List documents
+					else if (choice.equals("8")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+						Claim claim = claimDataStore.getClaim(Integer.parseInt(claimId));
+
+						JOptionPane.showMessageDialog(null, claimDataStore.listDocuments(Integer.parseInt(identifier), Integer.parseInt(claimId)).toString());
+
+					}
+
+					// 9 - simulate document tampering
+					else if (choice.equals("9")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
+
+						String docContent = JOptionPane.showInputDialog("Insert new document content:");
+
+						claimDataStore.simulateTampering(Integer.parseInt(claimId), Integer.parseInt(docId), docContent);
+
+						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
+						String encryptedHash = document.getSignature();
+						int documentOwnerId = claimDataStore.getDocumentOwner(Integer.parseInt(claimId), Integer.parseInt(docId));
+
+						Signature sign = new Signature();
+
+						sign.validateSignature("publicKeys\\" + "user" + documentOwnerId + "PublicKey", encryptedHash, docContent);
+					}
+
+					// exit to close application
+					else if (choice.equals("exit")) {
+						break;
+					} else {
+						JOptionPane.showMessageDialog(null, "Unknown command.\nPress 'OK' to restart.");
+					}
+
+				} catch (ClaimNotFoundException_Exception | DocumentNotFoundException_Exception | WrongUserIdException_Exception | TamperedDocumentException_Exception | NumberFormatException e) {
+
+					JOptionPane.showMessageDialog(null, e.getMessage());
+
 				}
-			}
+			} //while(true)
+		} // if user is a client
 
-		} else if (userId.contains("o")) {
-
-			String choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-					"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
+		// if user is a Officer
+		else if (userId.contains("Officer")) {
 
 			while (true) {
 
-				if (choice.equals("1")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
+				try {
 
-					String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId));
-					JOptionPane.showMessageDialog(null, claimToString + "\nPress 'OK' to continue.");
+					String choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
+							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n [7] - List Documents\n [8] - Simulate document tampering\n exit to finish");
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
+					// 1 - read claim
+					if (choice.equals("1")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-				} else if (choice.equals("2")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					String claimDescription = JOptionPane.showInputDialog("Insert the new claim description:");
+						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
 
-					claimDataStore.updateClaim(Integer.parseInt(claimId), claimDescription);
-					String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId));
-
-					JOptionPane.showMessageDialog(null, "Claim updated.\n" + claimToString + "\nPress 'OK' to continue");
-
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
-
-				} else if (choice.equals("3")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					String docName = JOptionPane.showInputDialog("Insert document name:");
-					String docContent = JOptionPane.showInputDialog("Insert document content :");
-
-					Signature sign = new Signature();
-					String encryptedHash = sign.createSignature("privateKeys\\" + "user" + identifier + "\\" + "user" + identifier + "PrivateKey", docContent);
-					//so guarda o document apos validacao
-					boolean validation = claimDataStore.createDocument(Integer.parseInt(claimId), docName, docContent, identifier, encryptedHash);
-
-					if (validation) {
-						JOptionPane.showMessageDialog(null, "Successfull upload!\nPress 'OK' to continue.");
-					} else {
-						JOptionPane.showMessageDialog(null, "Error! Document was not successfully uploaded.\nPress 'OK' to continue.");
+						String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId), clientId);
+						JOptionPane.showMessageDialog(null, claimToString + "\nPress 'OK' to continue.");
 					}
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
+					// 	2 - update claim
+					else if (choice.equals("2")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-				} else if (choice.equals("4")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					String docId = JOptionPane.showInputDialog("Insert document ID:");
+						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
 
-					String docToString = claimDataStore.readDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
+						String claimDescription = JOptionPane.showInputDialog("Insert the new claim description:");
 
-					Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
-					String encryptedHash = document.getSignature();
-					Signature sign = new Signature();
+						claimDataStore.updateClaim(clientId, Integer.parseInt(claimId), claimDescription);
+						String claimToString = claimDataStore.retrieveClaim(Integer.parseInt(claimId), clientId);
 
-					boolean validation = sign.validateSignature("publicKeys\\" + "user" + identifier + "PublicKey", encryptedHash, document.getContent());
-					JOptionPane.showMessageDialog(null, docToString + "\nPress 'OK' to continue");
+						JOptionPane.showMessageDialog(null, "Claim updated.\n" + claimToString + "\nPress 'OK' to continue");
+					}
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
+					// 3 - submit document
+					else if (choice.equals("3")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-				} else if (choice.equals("5")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					String docId = JOptionPane.showInputDialog("Insert document ID:");
-					String docContent = JOptionPane.showInputDialog("Insert new document content:");
+						String docName = JOptionPane.showInputDialog("Insert document name:");
+						String docContent = JOptionPane.showInputDialog("Insert document content :");
 
-					claimDataStore.updateDocument(identifier, Integer.parseInt(claimId), Integer.parseInt(docId), docContent);
-					String docToString = claimDataStore.readDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
+						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
 
-					JOptionPane.showMessageDialog(null, "Document updated.\n" + docToString + "\nPress 'OK' to continue");
+						Signature sign = new Signature();
+						String encryptedHash = sign.createSignature("privateKeys\\" + "user" + identifier + "\\" + "user" + identifier + "PrivateKey", docContent);
+						//so guarda o document apos validacao
+						claimDataStore.createDocument(Integer.parseInt(claimId), docName, docContent, clientId, Integer.parseInt(identifier), encryptedHash);
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
+						JOptionPane.showMessageDialog(null, "Successfull upload!\nPress 'OK' to continue.");
 
-				} else if (choice.equals("6")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					String docId = JOptionPane.showInputDialog("Insert document ID:");
+					}
 
-					claimDataStore.deleteDocument(identifier, Integer.parseInt(claimId), Integer.parseInt(docId));
+					// 4 - read document
+					else if (choice.equals("4")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
 
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
-				} else if (choice.equals("7")) {
-					String claimId = JOptionPane.showInputDialog("Insert claim ID:");
-					Claim claim = claimDataStore.getClaim(Integer.parseInt(claimId));
-					/*for (int i = 1; i < claimDataStore.getNumberOfDocs(Integer.parseInt(claimId)); i++) {
-						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), i);
+						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
+
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
+
+						String docToString = claimDataStore.readDocument(clientId, Integer.parseInt(claimId), Integer.parseInt(docId));
+
+						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
+
+						int docOwnerId = claimDataStore.getDocumentOwner(clientId, Integer.parseInt(docId));
+
 						String encryptedHash = document.getSignature();
 						Signature sign = new Signature();
-						boolean validation = sign.validateSignature("publicKeys\\" + "user" + identifier + "PublicKey", encryptedHash, document.getContent());
-					}*/
 
-					JOptionPane.showMessageDialog(null, claimDataStore.listDocuments(Integer.parseInt(claimId)).toString());
-					choice = JOptionPane.showInputDialog("Thank you for using our service. Select one of the following options\n [1] - Read Claim\n " +
-							"[2] - Update claim\n [3] - Submit Document\n [4] - Read Document\n [5] - Update Document\n [6] - Delete Document\n  [7] - List Documents\n exit to finish");
-				} else {
-					break;
+						sign.validateSignature("publicKeys\\" + "user" + docOwnerId + "PublicKey", encryptedHash, document.getContent());
+
+						JOptionPane.showMessageDialog(null, docToString + "\nPress 'OK' to continue");
+					}
+
+					// 5 - update document
+					else if (choice.equals("5")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
+
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
+						String docContent = JOptionPane.showInputDialog("Insert new document content:");
+
+						claimDataStore.updateDocument(clientId, Integer.parseInt(claimId), Integer.parseInt(docId), docContent);
+						String docToString = claimDataStore.readDocument(clientId, Integer.parseInt(claimId), Integer.parseInt(docId));
+
+						JOptionPane.showMessageDialog(null, "Document updated.\n" + docToString + "\nPress 'OK' to continue");
+					}
+
+					// 6 - delete document
+					else if (choice.equals("6")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
+
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
+
+						claimDataStore.deleteDocument(clientId, Integer.parseInt(claimId), Integer.parseInt(docId));
+					}
+
+					// 7 - list documents
+					else if (choice.equals("7")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+
+						int clientId = claimDataStore.getClaimUser(Integer.parseInt(claimId));
+
+						Claim claim = claimDataStore.getClaim(Integer.parseInt(claimId));
+
+						JOptionPane.showMessageDialog(null, claimDataStore.listDocuments(clientId, Integer.parseInt(claimId)).toString());
+					}
+
+					// 8 - simulate tampered document
+					else if (choice.equals("8")) {
+						String claimId = JOptionPane.showInputDialog("Insert claim ID (positive integer number): ");
+						String docId = JOptionPane.showInputDialog("Insert document ID (positive integer number): ");
+						String docContent = JOptionPane.showInputDialog("Insert new document content:");
+
+						claimDataStore.simulateTampering(Integer.parseInt(claimId), Integer.parseInt(docId), docContent);
+
+						Signature sign = new Signature();
+						Document document = claimDataStore.getDocument(Integer.parseInt(claimId), Integer.parseInt(docId));
+						String encryptedHash = document.getSignature();
+
+						sign.validateSignature("publicKeys\\" + "user" + userId + "PublicKey", encryptedHash, docContent);
+					}
+
+					// exit to close application
+					else if (choice.equals("exit")) {
+						break;
+					} else {
+						JOptionPane.showMessageDialog(null, "Unknown command.\nPress 'OK' to restart.");
+					}
+
+				} catch (ClaimNotFoundException_Exception | DocumentNotFoundException_Exception | WrongUserIdException_Exception | TamperedDocumentException_Exception | NumberFormatException e) {
+
+					JOptionPane.showMessageDialog(null, e.getMessage());
 				}
+
 			} //while(true)
 
-		} // if userId.contains("o")
+		} // if user is an officer
 
 
 	} //runClaimDataBase

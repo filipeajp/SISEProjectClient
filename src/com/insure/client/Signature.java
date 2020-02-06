@@ -43,7 +43,7 @@ public class Signature {
 
 	//decrypt hash and compare hash obtained from the message
 	// validate integrity and authenticity
-	public boolean validateSignature (String fileName, String encryptedHash, String docContent) throws java.lang.Exception {
+	public void validateSignature (String fileName, String encryptedHash, String docContent) throws TamperedDocumentException_Exception, java.lang.Exception {
 		// Decrypt encrypted hash
 		String decryptedHash = decryptHash(fileName, encryptedHash);
 
@@ -51,9 +51,8 @@ public class Signature {
 		String docHash = generateHash(docContent);
 
 		// Validate
-		if (!docHash.equals(decryptedHash)) return false;
-
-		return true;
+		if (!docHash.equals(decryptedHash))
+			throw new TamperedDocumentException_Exception("This document was tampered!", new TamperedDocumentException());
 	}
 }
 
