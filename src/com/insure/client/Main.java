@@ -6,6 +6,11 @@ package com.insure.client;
 import javax.swing.*;
 import javax.xml.ws.BindingProvider;
 
+
+/*
+	This class allows the communication between the client and the server.
+	The client is able to interact with the system, creating claims and executing
+	the other available interactions. The officers, however, are unable to create claims. */
 public class Main {
 	private static final String identifier = "";
 	private static final String userType = "";
@@ -26,9 +31,8 @@ public class Main {
 	}
 
 	/*
-	 * This method executes the ClaimData client by receiving an expression as input
-	 * from the user with numbers, multiplications and summations and printing the result
-	 * ClaimDataStore will run until the user input 'exit'
+	 * This method executes the ClaimData client by receiving inputs
+	 * from the client. ClaimDataStore will run until the user input 'exit'
 	 * */
 	public static void runClaimDataBase (ClaimDataStore claimDataStore, String userType, String identifier) throws java.lang.Exception {
 		String[] userOptions = {"Client", "Officer"};
@@ -185,7 +189,7 @@ public class Main {
 
 				} catch (ClaimNotFoundException_Exception | DocumentNotFoundException_Exception | WrongUserIdException_Exception | TamperedDocumentException_Exception | NumberFormatException e) {
 
-					JOptionPane.showMessageDialog(null, e.getMessage());
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 
 				}
 			} //while(true)
